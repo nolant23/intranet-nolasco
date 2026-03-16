@@ -1,0 +1,10 @@
+# File di database locali (non servono su Vercel, riducono upload e rischio di bundle giganti)
+prisma/*.db
+prisma/*.db-journal
+*.db
+*.backup.db
+
+# Dati di sviluppo
+.env
+.env.*
+!.env.example
