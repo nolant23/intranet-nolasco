@@ -1,6 +1,6 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
+const nextConfig = {
   experimental: {
     serverActions: {
       // Aumentiamo il limite predefinito di 1MB per permettere
@@ -20,6 +20,6 @@ const nextConfig: NextConfig = {
       "./public/**",
     ],
   },
-};
+} as NextConfig;
 
 export default nextConfig;
