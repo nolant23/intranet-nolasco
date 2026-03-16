@@ -9,6 +9,16 @@ const nextConfig: NextConfig = {
     },
     // Evita di includere Prisma nel bundle delle serverless function (supera 2GB su Vercel)
     serverComponentsExternalPackages: ["prisma", "@prisma/client"],
+    // Escludi dal trace delle function: file .db e cartella public (evita bundle da 2GB+)
+    outputFileTracingExcludes: {
+      "*": [
+        "./prisma/*.db",
+        "./prisma/*.db-journal",
+        "./**/*.db",
+        "./**/*.db-journal",
+        "./public/**",
+      ],
+    },
   },
 };
 
