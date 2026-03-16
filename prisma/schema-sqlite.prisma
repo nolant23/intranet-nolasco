@@ -1,0 +1,343 @@
+// Prisma schema per leggere dal vecchio SQLite (backup) durante la migrazione
+
+generator clientSqlite {
+  provider = "prisma-client-js"
+  output   = "../node_modules/@prisma/client-sqlite"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.backup.db"
+}
+
+// Copia dei modelli attuali, usati solo in lettura dal vecchio DB
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      String
+  attivo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  manutenzioni Manutenzione[]
+  interventi   Intervento[]
+  presenze     Presenza[]
+}
+
+model Cliente {
+  id            String   @id @default(uuid())
+  denominazione String
+  indirizzo     String
+  comune        String
+  cap           String
+  provincia     String
+  email         String?
+  pec           String?
+  codiceSdi     String?
+  cellulare     String?
+  glideId       String?
+  ficId         String?  @unique
+  tipologia     String
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  ficCode                    String?
+  ficType                    String?
+  ficFirstName               String?
+  ficLastName                String?
+  ficContactPerson           String?
+  ficVatNumber               String?
+  ficTaxCode                 String?
+  ficAddressStreet           String?
+  ficAddressPostalCode       String?
+  ficAddressCity             String?
+  ficAddressProvince         String?
+  ficAddressExtra            String?
+  ficCountry                 String?
+  ficCountryIso              String?
+  ficCertifiedEmail          String?
+  ficPhone                   String?
+  ficFax                     String?
+  ficNotes                   String?
+  ficDefaultVatJson          String?
+  ficDefaultPaymentTerms     Int?
+  ficDefaultPaymentTermsType String?
+  ficDefaultPaymentMethodJson String?
+  ficBankIban                String?
+  ficBankName                String?
+  ficBankSwift               String?
+  ficShippingAddressJson     String?
+  ficEInvoice                Boolean?
+  ficEiCode                  String?
+  ficDiscountCustom          Float?
+  ficCreatedAt               DateTime?
+  ficUpdatedAt               DateTime?
+
+  impianti      Impianto[]
+  fatture       Fattura[]
+  noteCreditoFiC NotaCredito[]
+}
+
+model Amministratore {
+  id            String   @id @default(uuid())
+  denominazione String
+  indirizzo     String
+  comune        String
+  cap           String
+  provincia     String
+  email         String?
+  pec           String?
+  telefono      String?
+  cellulare     String?
+  codiceSdi     String?
+  note          String?
+  glideIdAmm    String?  @unique
+  glidePrintTrigger Boolean?
+  glideEcUrl    String?
+  glidePdfGlide String?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  impianti      Impianto[]
+}
+
+model Impianto {
+  id               String   @id @default(uuid())
+  numeroImpianto   String?
+  glideRowId       String?  @unique
+  glideImpianto    String?
+  indirizzo        String
+  comune           String
+  cap              String?
+  provincia        String?
+  enteNotificato   String?
+  tipologia        String?
+  modello          String?
+  numeroFabbrica   String?
+  matricola        String?
+  portata          Float?
+  fermate          Int?
+  servizi          Int?
+  costruttore      String?
+  installatore     String?
+  naturaVano       String?
+  produttoreStruttura String?
+  testata          Float?
+  corsa            Float?
+  fossa            Float?
+  azionamento      String?
+  alimentazione    String?
+  posizioneQuadro  String?
+  funi             String?
+  guideCabina      String?
+  guideContrappeso String?
+
+  glideAmministratoreIdAmmImp    String?
+  glideClienteIdClienteImp       String?
+  glideClienteIdClienteFic       String?
+  glideClienteIdClienteFicNumber Float?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  clienteId        String?
+  cliente          Cliente? @relation(fields: [clienteId], references: [id])
+
+  amministratoreId String?
+  amministratore   Amministratore? @relation(fields: [amministratoreId], references: [id])
+
+  contratti        Contratto[]
+  manutenzioni     Manutenzione[]
+  interventi       Intervento[]
+}
+
+model Contratto {
+  id                    String   @id @default(uuid())
+  numero                String?  @unique
+  tipologia             String?
+  dataEmissione         DateTime @default(now())
+  dataContratto         DateTime?
+  scadenzaContratto     DateTime?
+  statoContratto        String?
+  durataAnni            Int?
+  numeroVisiteAnnue     Int?
+  canoneManutenzione    Float?
+  periodicitaFatturazione String?
+  dataInizioFatturazione  DateTime?
+  gratuito              Boolean  @default(false)
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  impiantoId            String?
+  impianto              Impianto? @relation(fields: [impiantoId], references: [id])
+
+  servizi               ServizioContratto[]
+}
+
+model ServizioContratto {
+  id          String   @id @default(uuid())
+  nome        String
+  importo     Float?   @default(0)
+  ra          Boolean  @default(false)
+  iva         String?
+
+  contrattoId String
+  contratto   Contratto @relation(fields: [contrattoId], references: [id])
+}
+
+model Manutenzione {
+  id                String   @id @default(uuid())
+  dataManutenzione  DateTime @default(now())
+  oraEsecuzione     String?
+
+  tecnicoId         String
+  tecnico           User     @relation(fields: [tecnicoId], references: [id])
+
+  impiantoId        String
+  impianto          Impianto @relation(fields: [impiantoId], references: [id])
+
+  clienteFirmatario String
+  firmaTecnico      String?
+  firmaCliente      String?
+  note              String?
+  rapportinoPdf     String?
+
+  effettuaSemestrale                 Boolean @default(false)
+  efficienzaParacadute               Boolean?
+  efficienzaLimitatoreVelocita       Boolean?
+  efficienzaDispositiviSicurezza     Boolean?
+  condizioneFuni                     String?
+  condizioniAttacchiFuni             String?
+  condizioneIsolamentoImpianto       String?
+  efficienzaCollegamentiTerra        Boolean?
+  osservazioniSemestrale             String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Intervento {
+  id                String   @id @default(uuid())
+  dataIntervento    DateTime @default(now())
+  oraInizio         String
+  oraFine           String
+
+  tecnicoId         String
+  tecnico           User     @relation(fields: [tecnicoId], references: [id])
+
+  impiantoId        String
+  impianto          Impianto @relation(fields: [impiantoId], references: [id])
+
+  descrizione       String?
+  partiSostituite   String?
+  materialeOrdinare String?
+  foto              String?
+
+  clienteFirmatario String
+  firmaTecnico      String?
+  firmaCliente      String?
+  rapportinoPdf     String?
+  numeroRapportino  String?
+
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model RolePermission {
+  id          String   @id @default(uuid())
+  role        String   @unique
+  permissions String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Presenza {
+  id               String   @id @default(uuid())
+  data             DateTime
+
+  tecnicoId        String
+  tecnico          User     @relation(fields: [tecnicoId], references: [id])
+
+  oreOrdinario     Float?   @default(0)
+  orePermesso      Float?   @default(0)
+  oreMalattia      Float?   @default(0)
+  oreStraordinario Float?   @default(0)
+  oreFestivo       Float?   @default(0)
+  oreFerie         Float?   @default(0)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@unique([data, tecnicoId])
+}
+
+model Fattura {
+  id            String   @id @default(uuid())
+  ficId         String   @unique
+  tipoDocumento String?
+  numero        String
+  data          DateTime
+  dataScadenza  DateTime?
+
+  clienteNome          String
+  clientePartitaIva    String?
+  clienteCodiceFiscale String?
+  clienteIndirizzo     String?
+  clienteFicId         String?
+  clienteId            String?
+  cliente              Cliente? @relation(fields: [clienteId], references: [id])
+
+  oggetto       String?
+  note          String?
+
+  importoNetto  Float
+  importoIva    Float?   @default(0)
+  importoRA     Float?   @default(0)
+  importoTotale Float
+
+  stato         String
+  metodoPagamento         String?
+  statoFatturaElettronica String?
+
+  articoliJson  String?
+  pagamentiJson String?
+
+  urlDocumento  String?
+
+  noteCredito   NotaCredito[]
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model NotaCredito {
+  id            String   @id @default(uuid())
+  ficId         String   @unique
+  numero        String
+  data          DateTime
+
+  clienteNome          String
+  clientePartitaIva    String?
+  clienteCodiceFiscale String?
+
+  oggetto       String?
+  note          String?
+
+  importoNetto  Float
+  importoIva    Float?   @default(0)
+  importoTotale Float
+
+  urlDocumento  String?
+
+  fatturaId     String?
+  fattura       Fattura? @relation(fields: [fatturaId], references: [id])
+  clienteFicId  String?
+  clienteId     String?
+  cliente       Cliente? @relation(fields: [clienteId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+

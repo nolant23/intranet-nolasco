@@ -1,0 +1,52 @@
+---
+description: Conferma obbligatoria prima di eliminare un record (pulsante Elimina o icona cestino)
+alwaysApply: true
+---
+
+# Eliminazione record – Conferma obbligatoria
+
+In tutta l'app, **ogni** azione di eliminazione deve richiedere **sempre** conferma all'utente prima di procedere.
+
+## Dove si applica
+
+- Pulsante **"Elimina"** (testo o con icona)
+- Icona **cestino** (Trash2 o simile) su ogni riga/record in tabelle o liste
+- Eliminazione singola o multipla (bulk delete)
+
+## Comportamento richiesto
+
+1. Al click su Elimina o sull'icona cestino **non** eseguire subito la delete.
+2. Mostrare un **dialog di conferma** (o `confirm()` nativo) con messaggio chiaro, es.:
+   - "Sei sicuro di voler eliminare questo [record]?"
+   - Per operazioni irreversibili: "L'operazione è irreversibile."
+   - Per eliminazioni multiple: "Sei sicuro di voler eliminare le N [record] selezionate?"
+3. Eseguire l'eliminazione **solo** se l'utente conferma (OK / Sì / Elimina).
+4. Se l'utente annulla (Annulla / No), non fare nulla.
+
+## Implementazione
+
+- Usare `confirm("messaggio")` per conferme semplici, oppure un componente `AlertDialog` (es. da `@/components/ui/alert-dialog`) per UX più coerente.
+- Il messaggio deve essere specifico per il tipo di entità (cliente, fattura, manutenzione, intervento, ecc.) e, se utile, avvisare di conseguenze (es. "I contratti associati potrebbero essere eliminati").
+
+## Esempio
+
+```tsx
+// ✅ Corretto: conferma prima di eliminare
+const handleDelete = async (id: string) => {
+  if (!confirm("Sei sicuro di voler eliminare questo [record]?")) return;
+  const res = await deleteXXX(id);
+  // ...
+};
+
+// Su pulsante o icona cestino
+<Button onClick={() => handleDelete(item.id)}>
+  <Trash2 />
+</Button>
+```
+
+```tsx
+// ❌ Errato: eliminazione senza conferma
+const handleDelete = async (id: string) => {
+  await deleteXXX(id);  // nessuna conferma
+};
+```

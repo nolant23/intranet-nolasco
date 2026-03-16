@@ -1,0 +1,60 @@
+export const TIPOLOGIA_IMPIANTO_OPTIONS = [
+  "Ascensore",
+  "Piattaforma Elevatrice",
+  "Montavivande",
+  "Montascale",
+  "Vimec",
+  "Servoscala a pedana",
+  "Montalettighe",
+  "Montacarichi",
+] as const;
+
+export const MODELLO_IMPIANTO_OPTIONS = [
+  "Elektra Max",
+  "Elektra Evo Hybrid",
+  "Unika (Oleo)",
+  "Ascensore Oleodinamico",
+  "Handicare",
+  "Evolux",
+  "Beltech Mini",
+  "Beltech",
+  "Microlift",
+  "Handicare Freecurve",
+  "Garaventa X3",
+  "CMA",
+  "Mangusta",
+  "INNO Compact",
+  "INNO Hybrid",
+  "INNO Max",
+  "ILC",
+  "Hidral HO",
+  "EasyPlat",
+  "MPGO",
+  "GL-1",
+  "Daldoss Microfreight",
+  "MegaRide",
+  "Enok Rebecca",
+  "Zen-0",
+  "MB-E10",
+  "Miniwatt",
+  "FLEX",
+] as const;
+
+export const STATO_MATERIALI_OPTIONS = [
+  "Da ordinare",
+  "Attesa disegni",
+  "Attesa approvazione",
+  "In progettazione",
+  "In produzione",
+  "In consegna",
+  "Consegnato in deposito",
+  "Consegnato al cliente",
+] as const;
+
+export const STATO_MONTAGGIO_OPTIONS = [
+  "Iniziare",
+  "In Corso",
+  "Pausa",
+  "Completato",
+  "Sospeso",
+] as const;

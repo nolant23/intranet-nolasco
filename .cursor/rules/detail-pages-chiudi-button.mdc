@@ -1,0 +1,37 @@
+---
+description: Pulsante Chiudi in alto a destra nelle pagine di dettaglio full page
+globs: "**/[id]/**/*.tsx,**/*Detail*Client*.tsx,**/*Detail*View*.tsx,**/*Detail*Page*.tsx"
+alwaysApply: false
+---
+
+# Pagine di dettaglio full page – Pulsante Chiudi
+
+Nelle schermate di **dettaglio full page** il pulsante **Chiudi** deve essere sempre **in alto a destra**, nella prima riga della pagina insieme al titolo.
+
+## Layout dell’header
+
+- Usa una sola riga: `flex flex-row items-center justify-between gap-4`.
+- **Sinistra**: titolo (es. "Dettaglio Cliente") con `min-w-0` per evitare overflow.
+- **Destra**: contenitore con `shrink-0` che include il `ChiudiButton` (e eventuali altri pulsanti primari, es. "Apri PDF").
+
+## Esempio
+
+```tsx
+<div className="flex flex-row items-center justify-between gap-4 bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+  <h1 className="text-3xl font-black tracking-tight text-slate-900 uppercase min-w-0">
+    Dettaglio [Entità]
+  </h1>
+  <div className="shrink-0">
+    <ChiudiButton listPath="/path-lista" className="bg-red-600 hover:bg-red-700 text-white h-12 px-6 text-base" />
+  </div>
+</div>
+```
+
+## Componente Chiudi
+
+Usa il componente `ChiudiButton` da `@/components/ChiudiButton` con la prop `listPath` che punta alla route dell’elenco (es. `/clienti`, `/fatture`). In questo modo si gestisce correttamente il ritorno dalla ricerca home (`?from=home&q=...`).
+
+## Regola
+
+- **Non** mettere il pulsante Chiudi in fondo alla pagina o in un footer.
+- **Non** usare `flex-col` nell’header del dettaglio: la riga deve restare unica così il pulsante resta in alto a destra anche su mobile.
